@@ -6,7 +6,19 @@
 \alias{appopt-package}
 \title{appopt: An approximate optimal threshold blocking algorithm}
 \description{
-An approximate optimal threshold blocking algorithm
-TODO: write real description
+Package to derive approximately optimal threshold blockings.
+Currently includes functions \code{\link{normalize_cov}} and
+\code{\link{get_blocking}}.
+}
+\details{
+This package is under heavy development, please use great
+caution when using it.
+
+More information and the latest version is found here:
+\url{http://github.com/fsavje/appopt}.
+
+Bug reports and suggestions are greatly appreciated and
+are best reported here:
+\url{http://github.com/fsavje/appopt/issues}.
 }
 
