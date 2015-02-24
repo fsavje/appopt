@@ -59,6 +59,12 @@
 #ifndef ANN_H
 #define ANN_H
 
+// R internals (for error handling)
+#include <R.h>
+
+// No dllexports needed for R
+#define DLL_API
+/*
 #ifdef WIN32
   //----------------------------------------------------------------------
   // For Microsoft Visual C++, externally accessible symbols must be
@@ -84,6 +90,7 @@
 #else
   #define DLL_API
 #endif
+*/
 
 //----------------------------------------------------------------------
 //  basic includes

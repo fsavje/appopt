@@ -1,19 +1,23 @@
 PKG_CPPFLAGS = -I./include
-PKG_LIBS = 
+PKG_LIBS = ANN.a
 
 MAKECONF = $(R_HOME)/etc${R_ARCH}/Makeconf
 
-OBJECTS = 
+OBJECTS = ann_wrapper.o
 
 # Development, do not recompile libraries
 # all: $(SHLIB)
 # Production
 all: clean $(SHLIB)
 
-$(SHLIB): 
+$(SHLIB): ANN.a
 
 clean:
 	$(RM) *.o *.a $(SHLIB)
+	(cd ANN && MAKECONF="$(MAKECONF)" $(MAKE) clean) || exit 1;
 
 %.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+
+ANN.a:
+	(cd ANN && MAKECONF="$(MAKECONF)" $(MAKE) library) || exit 1;

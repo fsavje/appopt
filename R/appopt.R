@@ -7,3 +7,6 @@
 #' @name appopt-package
 #' @aliases appopt
 NULL
+
+#' @useDynLib appopt c_temp
+NULL
