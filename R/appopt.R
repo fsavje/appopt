@@ -8,5 +8,5 @@
 #' @aliases appopt
 NULL
 
-#' @useDynLib appopt c_temp
+#' @useDynLib appopt c_ann_init c_ann_query
 NULL
