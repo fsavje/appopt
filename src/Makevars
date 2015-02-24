@@ -1,0 +1,19 @@
+PKG_CPPFLAGS = -I./include
+PKG_LIBS = 
+
+MAKECONF = $(R_HOME)/etc${R_ARCH}/Makeconf
+
+OBJECTS = 
+
+# Development, do not recompile libraries
+# all: $(SHLIB)
+# Production
+all: clean $(SHLIB)
+
+$(SHLIB): 
+
+clean:
+	$(RM) *.o *.a $(SHLIB)
+
+%.o: %.cpp
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@

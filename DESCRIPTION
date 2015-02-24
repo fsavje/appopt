@@ -1,0 +1,17 @@
+Package: appopt
+Type: Package
+Title: An approximate optimal threshold blocking algorithm
+Version: 0.0.0.9000
+Date: 2015-02-24
+Authors@R: c(person("Fredrik", "Savje", email = "fredrik.savje@nek.uu.se", role = c("aut", "cre")))
+Description: An approximate optimal threshold blocking algorithm
+    TODO: write real description
+Depends:
+    R (>= 3.1.2)
+Imports:
+NeedsCompilation: yes
+License: GPL (>= 2)
+LicenseNote: The appopt package includes the ANN C++ library by Sunil
+    Arya and David Mount distributed under the LGPLv2.1 license.
+URL: http://github.com/fsavje/appopt
+BugReports: http://github.com/fsavje/appopt/issues
