@@ -70,9 +70,9 @@ get_blocking <- function(data,
 
   structure(data.frame(labels = 1:nrow(data), blocks = blocks),
             options = list(block_size = block_size,
-                           algorithm = algorithm,
-                           MIS_algorithm = MIS_algorithm,
-                           split_algorithm = split_algorithm))
+                           algorithm = algorithm)) #,
+                           #MIS_algorithm = MIS_algorithm,
+                           #split_algorithm = split_algorithm))
 }
 
 get_appopt_undirected <- function(ann_data_ptr,
