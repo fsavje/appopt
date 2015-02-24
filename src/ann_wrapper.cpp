@@ -171,7 +171,7 @@ namespace ANN {
     double tmp_dists[run_k];
 
     for (size_t i = 0; i < n_queries; ++i) {
-      if (query_indices[i] < 1 || static_cast<unsigned int>(query_indices[i]) > n_data_points) {
+      if (query_indices[i] < 0 || static_cast<unsigned int>(query_indices[i]) > n_data_points) {
         error("query index out of bounds");
       }
       search->search_tree->annkSearch(data_matrix + query_indices[i] * dimensions, // pointer to query point
@@ -215,7 +215,7 @@ namespace ANN {
     double tmp_dists[run_k];
 
     for (size_t i = 0; i < n_queries; ++i) {
-      if (query_indices[i] < 1 || static_cast<unsigned int>(query_indices[i]) > n_data_points) {
+      if (query_indices[i] < 0 || static_cast<unsigned int>(query_indices[i]) > n_data_points) {
         error("query index out of bounds");
       }
       search->search_tree->annkSearch(data_matrix + query_indices[i] * dimensions, // pointer to query point
@@ -275,7 +275,7 @@ namespace ANN {
       ANNpointSet* search_tree;
 
       for (size_t i = 0; i < n_search_points; ++i) {
-        if (search_indices[i] < 1 || static_cast<unsigned int>(search_indices[i]) > n_data_points) {
+        if (search_indices[i] < 0 || static_cast<unsigned int>(search_indices[i]) > n_data_points) {
           error("search index out of bounds");
         }
         // pointer to data points of search
