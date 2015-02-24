@@ -2,5 +2,6 @@
 
 export(get_blocking)
 export(normalize_cov)
+import(Matrix)
 useDynLib(appopt,c_ann_init)
 useDynLib(appopt,c_ann_query)

@@ -4,11 +4,12 @@ Title: An approximate optimal threshold blocking algorithm
 Version: 0.0.0.9000
 Date: 2015-02-24
 Authors@R: c(person("Fredrik", "Savje", email = "fredrik.savje@nek.uu.se", role = c("aut", "cre")))
-Description: An approximate optimal threshold blocking algorithm
-    TODO: write real description
+Description: Package to derive approximately optimal threshold blockings. It is under heavy
+  development, please use great caution when using it.
 Depends:
     R (>= 3.1.2)
 Imports:
+    Matrix (>= 1.1-4)
 NeedsCompilation: yes
 License: GPL (>= 2)
 LicenseNote: The appopt package includes the ANN C++ library by Sunil

@@ -1,4 +1,5 @@
 #' @useDynLib appopt c_ann_init c_ann_query
+#' @import Matrix
 NULL
 
 #' Construct threshold blocking
