@@ -82,8 +82,8 @@ get_appopt_undirected <- function(ann_data_ptr,
 
   blocks <- vector(mode = "integer", length = n)
 
-  nn_indices <- as.vector(get_knn(ann_data_ptr, 0:(n - 1), 0:(n - 1), block_size - 1, FALSE))
-  NNE <- sparseMatrix(i = nn_indices + 1,
+  nn_indices <- 1 + as.vector(get_knn(ann_data_ptr, 0:(n - 1), 0:(n - 1), block_size - 1, FALSE))
+  NNE <- sparseMatrix(i = nn_indices,
                       j = rep(1:n, each = (block_size - 1)),
                       dims = c(n, n),
                       symmetric = TRUE)
@@ -104,7 +104,7 @@ get_appopt_undirected <- function(ann_data_ptr,
   }
 
   if (any(blocks == 0)) {
-    blocks[blocks == 0] <- as.vector(get_knn(ann_data_ptr, seeds - 1L, which(blocks == 0) - 1L, 1L, TRUE))
+    blocks[blocks == 0] <- blocks[1 + as.vector(get_knn(ann_data_ptr, seeds - 1L, which(blocks == 0) - 1L, 1L, TRUE))]
   }
 
   return(blocks)
@@ -119,8 +119,8 @@ get_appopt_paper <- function(ann_data_ptr,
 
   # Step 1: Get (k - 1)-nearest neighbor graph
 
-  nn_indices <- as.vector(get_knn(ann_data_ptr, 0:(n - 1), 0:(n - 1), block_size - 1, FALSE))
-  NNE <- sparseMatrix(i = nn_indices + 1,
+  nn_indices <- 1 + as.vector(get_knn(ann_data_ptr, 0:(n - 1), 0:(n - 1), block_size - 1, FALSE))
+  NNE <- sparseMatrix(i = nn_indices,
                       j = rep(1:n, each = (block_size - 1)),
                       dims = c(n, n),
                       symmetric = TRUE)
@@ -162,8 +162,8 @@ get_appopt_directed <- function(ann_data_ptr,
 
   blocks <- vector(mode = "integer", length = n)
 
-  nn_indices <- as.vector(get_knn(ann_data_ptr, 0:(n - 1), 0:(n - 1), block_size - 1, FALSE))
-  NNE <- sparseMatrix(i = nn_indices + 1,
+  nn_indices <- 1 + as.vector(get_knn(ann_data_ptr, 0:(n - 1), 0:(n - 1), block_size - 1, FALSE))
+  NNE <- sparseMatrix(i = nn_indices,
                       j = rep(1:n, each = (block_size - 1)),
                       dims = c(n, n))
 
@@ -183,7 +183,7 @@ get_appopt_directed <- function(ann_data_ptr,
   }
 
   if (any(blocks == 0)) {
-    blocks[blocks == 0] <- as.vector(get_knn(ann_data_ptr, seeds - 1L, which(blocks == 0) - 1L, 1L, TRUE))
+    blocks[blocks == 0] <- blocks[1 + as.vector(get_knn(ann_data_ptr, seeds - 1L, which(blocks == 0) - 1L, 1L, TRUE))]
   }
 
   return(blocks)
