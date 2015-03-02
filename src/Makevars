@@ -6,15 +6,16 @@ OBJECTS = $(addprefix $(BUILDDIR)/,$(TOBUILD))
 MAKECONF = $(R_HOME)/etc${R_ARCH}/Makeconf
 
 PKG_CPPFLAGS = -I./include
-PKG_LIBS = $(BUILDDIR)/ANN.a
+PKG_LIBS = $(BUILDDIR)/ANN.a $(BUILDDIR)/CHOLMOD.a
 
 all: $(BUILDDIR) clean $(SHLIB)
 
-$(SHLIB): $(BUILDDIR)/ANN.a
+$(SHLIB): $(BUILDDIR)/ANN.a $(BUILDDIR)/CHOLMOD.a
 
 clean:
 	$(RM) $(BUILDDIR)/*.o $(BUILDDIR)/*.a $(SHLIB)
 	(cd ANN && MAKECONF="$(MAKECONF)" $(MAKE) clean) || exit 1;
+	(cd CHOLMOD && MAKECONF="$(MAKECONF)" $(MAKE) clean) || exit 1;
 
 $(BUILDDIR)/%.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
@@ -24,3 +25,6 @@ $(BUILDDIR):
 
 $(BUILDDIR)/ANN.a:
 	(cd ANN && MAKECONF="$(MAKECONF)" LIBDIR="$(BUILDDIR)" $(MAKE) library) || exit 1;
+
+$(BUILDDIR)/CHOLMOD.a:
+	(cd CHOLMOD && MAKECONF="$(MAKECONF)" LIBDIR="$(BUILDDIR)" $(MAKE) library) || exit 1;

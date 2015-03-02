@@ -12,7 +12,10 @@ Imports:
     Matrix (>= 1.1-4)
 NeedsCompilation: yes
 License: GPL (>= 2)
-LicenseNote: The appopt package includes the ANN C++ library by Sunil
-    Arya and David Mount distributed under the LGPLv2.1 license.
+LicenseNote: The appopt package includes the following libraries:
+    * The ANN C++ library by Sunil Arya and David Mount,
+    distributed under the LGPLv2.1 license.
+    * The CHOLMOD C library by Timothy A. Davis, distributed
+    under the LGPLv2.1 license.
 URL: http://github.com/fsavje/appopt
 BugReports: http://github.com/fsavje/appopt/issues
