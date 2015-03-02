@@ -1,23 +1,26 @@
-PKG_CPPFLAGS = -I./include
-PKG_LIBS = -lstdc++ ANN.a
+BUILDDIR = build
+TOBUILD = ann_wrapper.o
+
+OBJECTS = $(addprefix $(BUILDDIR)/,$(TOBUILD))
 
 MAKECONF = $(R_HOME)/etc${R_ARCH}/Makeconf
 
-OBJECTS = ann_wrapper.o
+PKG_CPPFLAGS = -I./include
+PKG_LIBS = -lstdc++ $(BUILDDIR)/ANN.a
 
-# Development, do not recompile libraries
-# all: $(SHLIB)
-# Production
-all: clean $(SHLIB)
+all: $(BUILDDIR) clean $(SHLIB)
 
-$(SHLIB): ANN.a
+$(SHLIB): $(BUILDDIR)/ANN.a
 
 clean:
-	$(RM) *.o *.a $(SHLIB)
+	$(RM) $(BUILDDIR)/*.o $(BUILDDIR)/*.a $(SHLIB)
 	(cd ANN && MAKECONF="$(MAKECONF)" $(MAKE) clean) || exit 1;
 
-%.o: %.cpp
+$(BUILDDIR)/%.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
 
-ANN.a:
-	(cd ANN && MAKECONF="$(MAKECONF)" $(MAKE) library) || exit 1;
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
+
+$(BUILDDIR)/ANN.a:
+	(cd ANN && MAKECONF="$(MAKECONF)" LIBDIR="$(BUILDDIR)" $(MAKE) library) || exit 1;
