@@ -4,7 +4,8 @@
 \alias{get_blocking}
 \title{Construct threshold blocking}
 \usage{
-get_blocking(data, block_size, algorithm = "directed", treetype = "kdtree")
+get_blocking(data, block_size, algorithm = "directed",
+  MIS_method = "heuristicSearch", treetype = "kdtree")
 }
 \arguments{
 \item{data}{a numeric matrix or data frame describing the covariates
@@ -15,27 +16,60 @@ of the units in the experiment.}
 \item{algorithm}{the version of the algorithm to use. Must be one of
 "directed", "undirected" or "paper".}
 
+\item{MIS_method}{the method to find a maximal independent set with.
+Must be one of "lexical", "1stPowOrder", "2ndPowOrder", "heuristicSearch"
+or "MaxIS".}
+
 \item{treetype}{the method to find nearest neighbors with. Must be one
   of "brute", "kdtree" or "bdtree". "kdtree" is recommended in most cases
   but for small samples or high dimensional covariates "brute" might perform
-  better.}
+  better. For highly clustered data "bdtree" might perform best.}
 }
 \value{
 \code{get_blocking} returns a data frame where one variable is the
-  units' labels (\code{1:n}) and one variable is their derived block membership.
+  units' labels (\code{1:n}) and one variable is their block membership.
   Details about the used algorithm is added as attributes to the data frame.
 }
 \description{
-This function derives an approximately optimal solution to the
+This function produces an approximately optimal solution to the
 threshold blocking problem where the objective is to minimize
 the maximum Euclidean distances between any two units
 within the same block.
 }
-\examples{
-data <- data.frame(x1 = rnorm(200),
-                   x2 = rnorm(200),
-                   x3 = runif(200))
+\section{Large data sets}{
 
-get_blocking(data, 4)
+
+\code{get_blocking} works well with large data sets (several millions of
+data points) but some parameter values can lead to extensive run time.
+Generally \code{algorithm == "directed"} is slightly faster than
+\code{algorithm == "undirected"}. For data sets with less than
+100,000 data points \code{MIS_method == "heuristicSearch"} usually
+works well. For bigger data sets (less than ten million points)
+\code{MIS_method == "2ndPowOrder"} is to prefer. Very large data sets
+should consider "lexical" or "1stPowOrder". \code{MIS_method == "MaxIS"}
+is usually only feasible with data sets with data points in the lower hundreds.
+
+The function is fastest with \code{algorithm == "directed"} and
+\code{MIS_method == "lexical"}. The time complexity is then
+\eqn{O(kn log n)}. Using "undirected", "1stPowOrder" or
+"2ndPowOrder" add steps taking \eqn{O(kn)} time with
+varying constants. Calling with "heuristicSearch" adds a step
+with \eqn{O(kn^1.5)} over "2ndPowOrder". "MaxIS" is NP-hard.
+}
+\examples{
+# Generate data sets
+x1 <- rnorm(200)
+data <- data.frame(x1 = x1, x2 = x1 + rnorm(200), x3 = x1 * runif(200))
+large_data <- data.frame(x1 = rnorm(5000000), x2 = runif(5000000))
+
+# Euclidean distances
+blocking1 <- get_blocking(data, 4)
+
+# Mahalanobis distances
+data_maha <- normalize_cov(data)
+blocking2 <- get_blocking(data_maha, 4)
+
+# Change `MIS_method' for large data sets
+blocking3 <- get_blocking(large_data, 4, MIS_method = "2ndPowOrder")
 }
 

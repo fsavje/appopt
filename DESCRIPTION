@@ -9,7 +9,6 @@ Description: Package to derive approximately optimal threshold blockings. It is 
 Depends:
     R (>= 3.1.2)
 Imports:
-    Matrix (>= 1.1-4)
 NeedsCompilation: yes
 License: GPL (>= 2)
 LicenseNote: The appopt package includes the following libraries:
