@@ -1,4 +1,4 @@
-#' @useDynLib appopt c_ann_init c_ann_query
+#' @useDynLib appopt cpp_ann_init cpp_ann_query
 #' @import Matrix
 NULL
 
@@ -58,7 +58,7 @@ get_blocking <- function(data,
 
   # TODO: for high covariate dimensions brute might be better, check for which dimensions this is.
 
-  ann_data_ptr <- .Call("c_ann_init", t(data), treetype, eps, PACKAGE = "appopt")
+  ann_data_ptr <- .Call("cpp_ann_init", t(data), treetype, eps, PACKAGE = "appopt")
 
   if (algorithm == "directed") {
     blocks <- get_appopt_directed(ann_data_ptr, nrow(data), block_size, MIS_algorithm)
@@ -190,7 +190,7 @@ get_appopt_directed <- function(ann_data_ptr,
 }
 
 get_knn <- function(ann_data_ptr, search, query, k, selfmatch) {
-  .Call("c_ann_query",
+  .Call("cpp_ann_query",
         ann_data_ptr,
         search,
         query,
