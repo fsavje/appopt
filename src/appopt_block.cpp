@@ -248,7 +248,7 @@ void heuristic_search(const cholmod_sparse* const NNE,
 
   std::list<int> tempMIS;
 
-  int to_check = int(100 * sqrt(NNE->ncol) + 100);
+  size_t to_check = 100 * size_t(sqrt(NNE->ncol)) + 100;
   if (to_check > NNE->ncol) {
     to_check = NNE->ncol;
   }
@@ -261,7 +261,7 @@ void heuristic_search(const cholmod_sparse* const NNE,
   // etc...
 
   std::list<int>::iterator insert_position = ordering.begin();
-  for (int i = 0; i < to_check; ++i) {
+  for (size_t i = 0; i < to_check; ++i) {
     ++insert_position;
     ordering.insert(insert_position, ordering.front());
     ordering.pop_front();
@@ -312,7 +312,8 @@ void findMIS_in_sp_lex(const cholmod_sparse* const NNE,
   const int* const NNE_p = static_cast<const int*>(NNE->p);
   const int* const NNE_i = static_cast<const int*>(NNE->i);
 
-  for (int i = 0; i < NNE->ncol; ++i) {
+  int n_vertices = static_cast<int>(NNE->ncol);
+  for (int i = 0; i < n_vertices; ++i) {
     findMIS_check_v(i, inSetA, NNE_p, NNE_i, MIS);
   }
 
@@ -370,7 +371,9 @@ void get_ordering(cholmod_sparse* const NNE,
   // Can thus be used to get col sums.
   const int* const adja_mat_p = static_cast<const int*>(adja_mat->p);
   std::list<std::pair<int,int> > tmp_order;
-  for (int i = 0; i < NNE->ncol; ++i) {
+
+  int n_vertices = static_cast<int>(NNE->ncol);
+  for (int i = 0; i < n_vertices; ++i) {
     tmp_order.push_back(std::make_pair(adja_mat_p[i + 1] - adja_mat_p[i], i));
   }
   cholmod_free_sparse(&adja_mat, cholmod_c);
