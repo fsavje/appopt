@@ -65,7 +65,7 @@ normalize_cov <- function(x, normalize = "decorrelate",
       stop("`norm_cov' must be positive-semidefinite.")
     }
 
-    x <- x %*% t(chol(solve(norm_cov)))
+    x <- tcrossprod(x, chol(solve(norm_cov)))
   }
 
   if (!is.null(weights)) {
@@ -80,7 +80,7 @@ normalize_cov <- function(x, normalize = "decorrelate",
       stop("`weights' must be positive-semidefinite.")
     }
 
-    x <- x %*% t(chol(weights))
+    x <- tcrossprod(x, chol(weights))
   }
 
   return(x)
