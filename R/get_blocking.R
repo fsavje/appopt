@@ -49,7 +49,7 @@ NULL
 #' # Generate data sets
 #' x1 <- rnorm(200)
 #' data <- data.frame(x1 = x1, x2 = x1 + rnorm(200), x3 = x1 * runif(200))
-#' large_data <- data.frame(x1 = rnorm(5000000), x2 = runif(5000000))
+#' large_data <- data.frame(x1 = rnorm(1e+6), x2 = runif(1e+6))
 #'
 #' # Euclidean distances
 #' blocking1 <- get_blocking(data, 4)
@@ -101,50 +101,50 @@ get_blocking <- function(data,
   treetype <- switch(treetype, "brute" = 1L, "kdtree" = 2L, "bdtree" = 3L)
 
   n_data_points <- nrow(data)
-  u_indices <- 0L:(n_data_points - 1L)
+  v_indices_cpp <- 0L:(n_data_points - 1L)
 
   # Step 1: Get (k - 1)-nearest neighbor graph
 
   ann_data_ptr <- .Call("cpp_ann_init", t(data), treetype, eps, PACKAGE = "appopt")
 
-  nn_indices <- as.vector(.Call("cpp_ann_query",
-                                ann_data_ptr,
-                                u_indices,
-                                u_indices,
-                                block_size - 1L,
-                                FALSE, # Don't need distances, only indices
-                                FALSE, # Selfmatch not allowed
-                                FALSE, # Don't save, will not run search again
-                                PACKAGE = "appopt")$nn_indices)
+  nn_indices_cpp <- as.vector(.Call("cpp_ann_query",
+                                    ann_data_ptr,
+                                    v_indices_cpp,
+                                    v_indices_cpp,
+                                    block_size - 1L,
+                                    FALSE, # Don't need distances, only indices
+                                    FALSE, # Selfmatch not allowed
+                                    FALSE, # Don't save, will not run search again
+                                    PACKAGE = "appopt")$nn_indices)
 
   # Step 2: Find MIS in the second power
   # Step 3: Form blocks with the seeds adjacent vertices
 
-  blocking_from_cpp <- .Call("cpp_get_blocking",
-                             n_data_points,
-                             block_size,
-                             nn_indices,
-                             algorithm,
-                             MIS_method,
-                             PACKAGE = "appopt")
+  blocking_cpp <- .Call("cpp_get_blocking",
+                        n_data_points,
+                        block_size,
+                        nn_indices_cpp,
+                        algorithm,
+                        MIS_method,
+                        PACKAGE = "appopt")
 
-  seeds <- blocking_from_cpp$seeds
-  blocks <- blocking_from_cpp$blocks
-  unassigned <- blocking_from_cpp$unassigned
+  seeds_cpp <- blocking_cpp$seeds
+  blocks <- blocking_cpp$blocks
+  unassigned_cpp <- blocking_cpp$unassigned
 
   # Step 4: Assign unassigned vertices
 
-  if (length(unassigned) > 0 && algorithm != 3L) {
+  if (length(unassigned_cpp) > 0 && algorithm != 3L) {
     # Assign to block with nearest seed
-    blocks[unassigned + 1L] <- blocks[as.vector(.Call("cpp_ann_query",
-                                                      ann_data_ptr,
-                                                      seeds,
-                                                      unassigned,
-                                                      1L,
-                                                      FALSE,
-                                                      TRUE,  # Allow selfmatch (seeds & unassigned are disjoint)
-                                                      FALSE,
-                                                      PACKAGE = "appopt")$nn_indices) + 1L]
+    blocks[unassigned_cpp + 1L] <- blocks[as.vector(.Call("cpp_ann_query",
+                                                          ann_data_ptr,
+                                                          seeds_cpp,
+                                                          unassigned_cpp,
+                                                          1L,
+                                                          FALSE,
+                                                          TRUE,  # Allow selfmatch (seeds & unassigned are disjoint)
+                                                          FALSE,
+                                                          PACKAGE = "appopt")$nn_indices) + 1L]
   }
 
   return(structure(data.frame(labels = 1:n_data_points, blocks = blocks), options = options))

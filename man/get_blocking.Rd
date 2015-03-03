@@ -60,7 +60,7 @@ with \eqn{O(kn^1.5)} over "2ndPowOrder". "MaxIS" is NP-hard.
 # Generate data sets
 x1 <- rnorm(200)
 data <- data.frame(x1 = x1, x2 = x1 + rnorm(200), x3 = x1 * runif(200))
-large_data <- data.frame(x1 = rnorm(5000000), x2 = runif(5000000))
+large_data <- data.frame(x1 = rnorm(1e+6), x2 = runif(1e+6))
 
 # Euclidean distances
 blocking1 <- get_blocking(data, 4)
