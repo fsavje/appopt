@@ -1,3 +1,4 @@
+#include <cmath>
 #include <list>
 #include <algorithm>
 #include <utility>
@@ -248,7 +249,7 @@ void heuristic_search(const cholmod_sparse* const NNE,
 
   std::list<int> tempMIS;
 
-  size_t to_check = 100 * size_t(sqrt(NNE->ncol)) + 100;
+  size_t to_check = 100 * static_cast<size_t>(std::sqrt(static_cast<long double>(NNE->ncol))) + 100;
   if (to_check > NNE->ncol) {
     to_check = NNE->ncol;
   }
