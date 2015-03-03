@@ -1,0 +1,2 @@
+# TODO: Split algorithm
+# TODO: Use long to store matrix pointers so more than 2,147,483,647 edges can be stored???
