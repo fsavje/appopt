@@ -84,10 +84,10 @@ get_blocking <- function(data,
             any(!is.na(data)),
             block_size >= 2)
 
-  if (algorithm == "paper" && MIS_method != "lexical") {
-    warning("Using `paper' algorithm but not `lexical', changing to `lexical'.")
-    MIS_method <- "lexical"
-  }
+  #if (algorithm == "paper" && MIS_method != "lexical") {
+  #  warning("Using `paper' algorithm but not `lexical', changing to `lexical'.")
+  #  MIS_method <- "lexical"
+  #}
 
   #split_algorithm = split_algorithm))
   options <- list(block_size = block_size,
@@ -95,20 +95,10 @@ get_blocking <- function(data,
                   MIS_method = MIS_method,
                   treetype = treetype)
 
-  directed <- switch(algorithm,
-                     "directed" = TRUE,
-                     "undirected" = FALSE,
-                     "paper" = FALSE)
-  MIS_method <- switch(MIS_method,
-                       "lexical" = 1L,
-                       "1stPowOrder" = 2L,
-                       "2ndPowOrder" = 3L,
-                       "heuristicSearch" = 4L,
-                       "MaxIS" = 5L)
-  treetype <- switch(treetype,
-                     "brute" = 1L,
-                     "kdtree" = 2L,
-                     "bdtree" = 3L)
+  algorithm <- switch(algorithm, "directed" = 1L, "undirected" = 2L, "paper" = 3L)
+  MIS_method <- switch(MIS_method, "lexical" = 1L, "1stPowOrder" = 2L,
+                       "2ndPowOrder" = 3L, "heuristicSearch" = 4L, "MaxIS" = 5L)
+  treetype <- switch(treetype, "brute" = 1L, "kdtree" = 2L, "bdtree" = 3L)
 
   n_data_points <- nrow(data)
   u_indices <- 0L:(n_data_points - 1L)
@@ -134,7 +124,7 @@ get_blocking <- function(data,
                              n_data_points,
                              block_size,
                              nn_indices,
-                             directed,
+                             algorithm,
                              MIS_method,
                              PACKAGE = "appopt")
 
@@ -144,28 +134,17 @@ get_blocking <- function(data,
 
   # Step 4: Assign unassigned vertices
 
-  if (length(unassigned) > 0) {
-    if (algorithm == "paper") {
-      # Find a block containing a (k - 1)-nearest neighbor
-      # for each ua (lexicographical ordering)
-      unassigned <- unassigned + 1L # R indices
-      is_assigned <- (blocks != 0)
-      for (ua in unassigned) {
-        blocks[ua] <- blocks[NNE[, ua] & is_assigned][1]
-      }
-
-    } else {
-      # Assign to block with nearest seed
-      blocks[unassigned + 1L] <- blocks[as.vector(.Call("cpp_ann_query",
-                                                        ann_data_ptr,
-                                                        seeds,
-                                                        unassigned,
-                                                        1L,
-                                                        FALSE,
-                                                        TRUE,  # Allow selfmatch (seeds & unassigned are disjoint)
-                                                        FALSE,
-                                                        PACKAGE = "appopt")$nn_indices) + 1L]
-    }
+  if (length(unassigned) > 0 && algorithm != 3L) {
+    # Assign to block with nearest seed
+    blocks[unassigned + 1L] <- blocks[as.vector(.Call("cpp_ann_query",
+                                                      ann_data_ptr,
+                                                      seeds,
+                                                      unassigned,
+                                                      1L,
+                                                      FALSE,
+                                                      TRUE,  # Allow selfmatch (seeds & unassigned are disjoint)
+                                                      FALSE,
+                                                      PACKAGE = "appopt")$nn_indices) + 1L]
   }
 
   return(structure(data.frame(labels = 1:n_data_points, blocks = blocks), options = options))
