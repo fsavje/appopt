@@ -36,7 +36,7 @@ blocking <- .Call("cpp_get_blocking",
                   n_massive,
                   2L,
                   nn_indices,
-                  TRUE,
+                  1L,
                   1L,
                   PACKAGE = "appopt")
 proc.time() - ptm
