@@ -280,7 +280,7 @@ void heuristic_search(const cholmod_sparse* const NNE,
 
   std::list<int> tempMIS;
 
-  size_t to_check = 100 * static_cast<size_t>(std::sqrt(static_cast<long double>(NNE->ncol))) + 100;
+  size_t to_check = static_cast<size_t>(std::sqrt(static_cast<long double>(NNE->ncol))) + 10000;
   if (to_check > NNE->ncol) {
     to_check = NNE->ncol;
   }
