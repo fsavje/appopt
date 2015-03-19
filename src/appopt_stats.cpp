@@ -66,10 +66,9 @@ extern "C" {
 
       avg_dist = 2 * avg_dist / static_cast<double>(n_data_points);
 
-      const SEXP outlist_R = PROTECT(allocVector(REALSXP, 2));
-      double* const outlist = REAL(outlist_R);
-      outlist[0] = max_dist;
-      outlist[1] = avg_dist;
+      const SEXP outlist_R = PROTECT(allocVector(VECSXP, 2));
+      SET_VECTOR_ELT(outlist_R, 0, ScalarReal(max_dist));
+      SET_VECTOR_ELT(outlist_R, 1, ScalarReal(avg_dist));
 
       const SEXP listnames = PROTECT(allocVector(STRSXP, 2));
       SET_STRING_ELT(listnames, 0, mkChar("max"));

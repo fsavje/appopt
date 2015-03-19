@@ -25,5 +25,5 @@ Rrep_get_block_stats <- function(data, block_size, blocking) {
     avg_dist <- avg_dist + sum(blocking == b) * mean(sub_mat) / length(blocking)
   }
 
-  c("max" = max_dist, "mean" = avg_dist)
+  list("max" = max_dist, "mean" = avg_dist)
 }
