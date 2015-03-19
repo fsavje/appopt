@@ -1,5 +1,5 @@
 BUILDDIR = build
-TOBUILD = ann_wrapper.o appopt_block.o
+TOBUILD = ann_wrapper.o appopt_block.o appopt_stats.o
 
 OBJECTS = $(addprefix $(BUILDDIR)/,$(TOBUILD))
 
