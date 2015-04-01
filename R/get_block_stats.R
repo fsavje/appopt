@@ -45,7 +45,7 @@ get_block_stats <- function(data, block_size, blocking) {
             length(blocking) == nrow(data))
 
   # Set so index start at 0
-  blocking = blocking - min(blocking)
+  blocking <- blocking - min(blocking)
 
   .Call("cpp_get_block_stats",
         t(data),
