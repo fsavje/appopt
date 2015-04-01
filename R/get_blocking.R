@@ -30,11 +30,13 @@ NULL
 #' @param data a numeric matrix or data frame describing the covariates
 #'   of the units in the experiment.
 #' @param block_size the desired minimum block size.
-#' @param algorithm the version of the algorithm to use. Must be one of
-#'   "directed", "undirected" or "paper".
+#' @param directed whether the directed version of the algorithm should
+#'   be used.
 #' @param MIS_method the method to find a maximal independent set with.
 #'   Must be one of "lexical", "1stPowOrder", "2ndPowOrder", "heuristicSearch"
 #'   or "MaxIS".
+#' @param unassinged_method how to assign vertices that are unassigned in the
+#'   last step of the algorithm.
 #' @param treetype the method to find nearest neighbors with. Must be one
 #'   of "brute", "kdtree" or "bdtree". "kdtree" is recommended in most cases
 #'   but for small samples or high dimensional covariates "brute" might perform
@@ -64,16 +66,16 @@ NULL
 #' @export
 get_blocking <- function(data,
                          block_size,
-                         algorithm = "directed",
+                         directed = TRUE,
                          MIS_method = "heuristicSearch",
-                         #split_algorithm = "default",
+                         unassinged_method = "seed_search",
                          treetype = "kdtree") {
 
   if (is.data.frame(data)) data <- as.matrix(data)
   block_size <- as.integer(block_size)[1]
-  algorithm <- match.arg(algorithm, c("directed", "undirected", "paper"))
+  directed <- as.logical(directed)[1]
   MIS_method <- match.arg(MIS_method, c("lexical", "1stPowOrder", "2ndPowOrder", "heuristicSearch", "MaxIS"))
-  #split_algorithm <- match.arg(split_algorithm, c("default"))
+  unassinged_method <- match.arg(unassinged_method, c("adjacent_search", "seed_search"))
   treetype <- match.arg(treetype, c("brute", "kdtree", "bdtree"))
   eps = 0.0 # approximation level in the ANN library, if eps > 0 non-exact NNG
 
@@ -84,20 +86,16 @@ get_blocking <- function(data,
             any(!is.na(data)),
             block_size >= 2)
 
-  #if (algorithm == "paper" && MIS_method != "lexical") {
-  #  warning("Using `paper' algorithm but not `lexical', changing to `lexical'.")
-  #  MIS_method <- "lexical"
-  #}
-
-  #split_algorithm = split_algorithm))
   options <- list(block_size = block_size,
-                  algorithm = algorithm,
+                  type = "appopt",
+                  directed = directed,
                   MIS_method = MIS_method,
+                  unassinged_method = unassinged_method,
                   treetype = treetype)
 
-  algorithm <- switch(algorithm, "directed" = 1L, "undirected" = 2L, "paper" = 3L)
   MIS_method <- switch(MIS_method, "lexical" = 1L, "1stPowOrder" = 2L,
                        "2ndPowOrder" = 3L, "heuristicSearch" = 4L, "MaxIS" = 5L)
+  unassinged_method <- switch(unassinged_method, "adjacent_search" = 1L, "seed_search" = 2L)
   treetype <- switch(treetype, "brute" = 1L, "kdtree" = 2L, "bdtree" = 3L)
 
   n_data_points <- nrow(data)
@@ -124,8 +122,9 @@ get_blocking <- function(data,
                         n_data_points,
                         block_size,
                         nn_indices_cpp,
-                        algorithm,
+                        directed,
                         MIS_method,
+                        unassinged_method,
                         PACKAGE = "appopt")
 
   seeds_cpp <- blocking_cpp$seeds
@@ -134,7 +133,7 @@ get_blocking <- function(data,
 
   # Step 4: Assign unassigned vertices
 
-  if (length(unassigned_cpp) > 0 && algorithm != 3L) {
+  if (length(unassigned_cpp) > 0 && unassinged_method == 2L) {
     # Assign to block with nearest seed
     blocks[unassigned_cpp + 1L] <- blocks[as.vector(.Call("cpp_ann_query",
                                                           ann_data_ptr,

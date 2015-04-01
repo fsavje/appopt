@@ -12,20 +12,19 @@
 #define HEURISTIC    4
 #define MAXIS        5
 
-#define DIRECTED    1
-#define UNDIRECTED  2
-#define PAPER       3
+#define ADJACENT_S  1
+#define SEED_S      2
 
 //SEXP get_R_mat(cholmod_sparse*);
-int get_blocking_internal(int, int, SEXP, int, int, std::list<int>&, int*);
+int get_blocking_internal(int, int, SEXP, bool, int, int, std::list<int>&, int*);
 cholmod_sparse* get_cholmod_NNE(int, int, SEXP, cholmod_common*);
-cholmod_sparse* get_second_power(cholmod_sparse*, int, cholmod_common*);
+cholmod_sparse* get_second_power(cholmod_sparse*, bool, cholmod_common*);
 
-void get_ordering(cholmod_sparse*, int, int, std::list<int>&, cholmod_common*);
+void get_ordering(cholmod_sparse*, int, bool, std::list<int>&, cholmod_common*);
 void heuristic_search(const cholmod_sparse*, std::list<int>&, std::list<int>&);
 void findMIS_in_sp_lex(const cholmod_sparse*, std::list<int>&);
 void findMIS_in_sp_order(const cholmod_sparse*, const std::list<int>&, std::list<int>&);
-void findMaxIS_in_sp(cholmod_sparse*, int, std::list<int>&, cholmod_common*);
+void findMaxIS_in_sp(cholmod_sparse*, bool, std::list<int>&, cholmod_common*);
 bool recur_MaxIS(bool*, int, int*, const int*, const int*, const int*, int, int*, std::list<int>&);
 
 extern "C" {
@@ -33,13 +32,15 @@ extern "C" {
   SEXP cpp_get_blocking(const SEXP n_vertices_R,
                         const SEXP block_size_R,
                         const SEXP NNE_R,
-                        const SEXP algorithm_R,
-                        const SEXP MIS_method_R) {
+                        const SEXP directed_R,
+                        const SEXP MIS_method_R,
+                        const SEXP unassinged_method_R) {
 
     const int n_vertices = asInteger(n_vertices_R);
     const int n_edges = asInteger(block_size_R) - 1;
-    const int algorithm = asInteger(algorithm_R);
+    const bool directed = (asLogical(directed_R) == 1);
     const int MIS_method = asInteger(MIS_method_R);
+    const int unassinged_method = asInteger(unassinged_method_R);
 
     const SEXP out_blocks_R = PROTECT(allocVector(INTSXP, n_vertices));
     int* const out_blocks = INTEGER(out_blocks_R);
@@ -49,9 +50,14 @@ extern "C" {
     std::list<int>* const seeds_ptr = new std::list<int>();
     std::list<int>& seeds = *seeds_ptr;
 
-    int n_unassigned = get_blocking_internal(n_vertices, n_edges, NNE_R,
-                                             algorithm, MIS_method,
-                                             seeds, out_blocks);
+    int n_unassigned = get_blocking_internal(n_vertices,
+                                             n_edges,
+                                             NNE_R,
+                                             directed,
+                                             MIS_method,
+                                             unassinged_method,
+                                             seeds,
+                                             out_blocks);
 
     // List of seeds
     const SEXP out_seeds_R = PROTECT(allocVector(INTSXP, seeds.size()));
@@ -95,8 +101,9 @@ extern "C" {
 int get_blocking_internal(const int n_vertices,
                           const int n_edges,
                           const SEXP NNE_R,
-                          const int algorithm,
+                          const bool directed,
                           const int MIS_method,
+                          const int unassinged_method,
                           std::list<int>& seeds,
                           int* const blocks) {
 
@@ -105,7 +112,7 @@ int get_blocking_internal(const int n_vertices,
 
   cholmod_sparse* NNE = get_cholmod_NNE(n_vertices, n_edges, NNE_R, &cholmod_c);
 
-  if (algorithm == UNDIRECTED || algorithm == PAPER) {
+  if (!directed) {
     // NNE = NNE | t(NNE)
     cholmod_sparse* NNEt = cholmod_transpose(NNE, CHOLMOD_PATTERN, &cholmod_c);
     cholmod_sparse* NNE_tmp = cholmod_add(NNE, NNEt, NULL, NULL, false, false, &cholmod_c);
@@ -125,7 +132,7 @@ int get_blocking_internal(const int n_vertices,
     case HEURISTIC:
       {
         std::list<int> ordering;
-        get_ordering(NNE, MIS_method, algorithm, ordering, &cholmod_c);
+        get_ordering(NNE, MIS_method, directed, ordering, &cholmod_c);
         if (MIS_method == HEURISTIC) {
           heuristic_search(NNE, ordering, seeds);
         } else {
@@ -135,7 +142,7 @@ int get_blocking_internal(const int n_vertices,
       break;
 
     case MAXIS:
-      findMaxIS_in_sp(NNE, algorithm, seeds, &cholmod_c);
+      findMaxIS_in_sp(NNE, directed, seeds, &cholmod_c);
       break;
 
     default:
@@ -161,7 +168,7 @@ int get_blocking_internal(const int n_vertices,
     }
   }
 
-  if (algorithm == PAPER) {
+  if (unassinged_method == ADJACENT_S) {
     // Assign unassigned to the block that contains
     // any of its nearest neighbors. When ties pick
     // first adjacent lexicographically by index.
@@ -186,7 +193,7 @@ int get_blocking_internal(const int n_vertices,
     }
   }
 
-  if (algorithm == DIRECTED) { // This is already done for undirected case
+  if (directed) { // This is already done for undirected case
     NNE->i = NULL; // Remove pointer to R object before freeing memory
   }
   cholmod_free_sparse(&NNE, &cholmod_c);
@@ -196,11 +203,11 @@ int get_blocking_internal(const int n_vertices,
 }
 
 void findMaxIS_in_sp(cholmod_sparse* const NNE,
-                     const int algorithm,
+                     const bool directed,
                      std::list<int>& MaxIs,
                      cholmod_common* const cholmod_c) {
 
-  cholmod_sparse* second_power = get_second_power(NNE, algorithm, cholmod_c);
+  cholmod_sparse* second_power = get_second_power(NNE, directed, cholmod_c);
   const int* const sp_p = static_cast<const int*>(second_power->p);
   const int* const sp_i = static_cast<const int*>(second_power->i);
   bool inSetI[NNE->ncol];
@@ -371,14 +378,14 @@ void findMIS_in_sp_order(const cholmod_sparse* const NNE,
 
 void get_ordering(cholmod_sparse* const NNE,
                   const int MIS_method,
-                  const int algorithm,
+                  const bool directed,
                   std::list<int>& ordering,
                   cholmod_common* const cholmod_c) {
 
   cholmod_sparse* adja_mat;
   switch(MIS_method) {
     case FSTPOWORDER:
-      if (algorithm == DIRECTED) {
+      if (directed) {
         // adja_mat = NNE | t(NNE)
         cholmod_sparse* NNEt = cholmod_transpose(NNE, CHOLMOD_PATTERN, cholmod_c);
         adja_mat = cholmod_add(NNE, NNEt, NULL, NULL, false, false, cholmod_c);
@@ -391,7 +398,7 @@ void get_ordering(cholmod_sparse* const NNE,
 
     case SNDPOWORDER:
     case HEURISTIC:
-      adja_mat = get_second_power(NNE, algorithm, cholmod_c);
+      adja_mat = get_second_power(NNE, directed, cholmod_c);
       break;
 
     default:
@@ -421,11 +428,11 @@ void get_ordering(cholmod_sparse* const NNE,
 }
 
 cholmod_sparse* get_second_power(cholmod_sparse* const NNE,
-                                 const int algorithm,
+                                 const bool directed,
                                  cholmod_common* const cholmod_c) {
 
   cholmod_sparse* out;
-  if (algorithm == DIRECTED) {
+  if (directed) {
     // out = (NNE | t(NNE) | t(NNE) %*% NNE) & !I
     cholmod_sparse* NNEt = cholmod_transpose(NNE, CHOLMOD_PATTERN, cholmod_c);
     cholmod_sparse* NNEtNNE = cholmod_aat(NNEt, NULL, 0, -1, cholmod_c); // -1 = no diagnol

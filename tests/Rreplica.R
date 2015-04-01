@@ -24,14 +24,16 @@
 
 Rrep_get_blocking <- function(data,
                               block_size,
-                              algorithm = "directed",
+                              directed = TRUE,
                               MIS_method = "heuristicSearch",
+                              unassinged_method = "seed_search",
                               treetype = "kdtree") {
 
   if (is.data.frame(data)) data <- as.matrix(data)
   block_size <- as.integer(block_size)[1]
-  algorithm <- match.arg(algorithm, c("directed", "undirected", "paper"))
+  directed <- as.logical(directed)[1]
   MIS_method <- match.arg(MIS_method, c("lexical", "1stPowOrder", "2ndPowOrder", "heuristicSearch", "MaxIS"))
+  unassinged_method <- match.arg(unassinged_method, c("adjacent_search", "seed_search"))
   treetype <- match.arg(treetype, c("brute", "kdtree", "bdtree"))
 
   stopifnot(is.matrix(data),
@@ -41,14 +43,11 @@ Rrep_get_blocking <- function(data,
             any(!is.na(data)),
             block_size >= 2)
 
-  #if (algorithm == "paper" && MIS_method != "lexical") {
-  #  warning("Using `paper' algorithm but not `lexical', changing to `lexical'.")
-  #  MIS_method <- "lexical"
-  #}
-
   options <- list(block_size = block_size,
-                  algorithm = algorithm,
+                  type = "appopt",
+                  directed = directed,
                   MIS_method = MIS_method,
+                  unassinged_method = unassinged_method,
                   treetype = treetype)
 
   n_data_points <- nrow(data)
@@ -64,7 +63,7 @@ Rrep_get_blocking <- function(data,
 
   NNG <- apply(nn_indices_R, 2, function (nn) { v_indices_R %in% nn })
 
-  if (algorithm == "undirected" || algorithm == "paper") {
+  if (!directed) {
     NNG <- NNG | t(NNG)
   }
 
@@ -83,7 +82,7 @@ Rrep_get_blocking <- function(data,
   unassigned_R <- which(blocks == 0)
 
   if (length(unassigned_R) > 0) {
-    if (algorithm == "paper") {
+    if (unassinged_method == "adjacent_search") {
       is_assigned <- (blocks != 0)
       for (ua in unassigned_R) {
         # NNG[, ua] & is_assigned = assigned neighbors

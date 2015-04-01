@@ -4,8 +4,9 @@
 \alias{get_blocking}
 \title{Construct threshold blocking}
 \usage{
-get_blocking(data, block_size, algorithm = "directed",
-  MIS_method = "heuristicSearch", treetype = "kdtree")
+get_blocking(data, block_size, directed = TRUE,
+  MIS_method = "heuristicSearch", unassinged_method = "seed_search",
+  treetype = "kdtree")
 }
 \arguments{
 \item{data}{a numeric matrix or data frame describing the covariates
@@ -13,12 +14,15 @@ of the units in the experiment.}
 
 \item{block_size}{the desired minimum block size.}
 
-\item{algorithm}{the version of the algorithm to use. Must be one of
-"directed", "undirected" or "paper".}
+\item{directed}{whether the directed version of the algorithm should
+be used.}
 
 \item{MIS_method}{the method to find a maximal independent set with.
 Must be one of "lexical", "1stPowOrder", "2ndPowOrder", "heuristicSearch"
 or "MaxIS".}
+
+\item{unassinged_method}{how to assign vertices that are unassigned in the
+last step of the algorithm.}
 
 \item{treetype}{the method to find nearest neighbors with. Must be one
   of "brute", "kdtree" or "bdtree". "kdtree" is recommended in most cases
