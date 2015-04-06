@@ -3,6 +3,7 @@
 #include <set>
 #include <map>
 #include <utility>
+#include <cmath>
 
 #include <R.h>
 #include <Rinternals.h>
@@ -152,11 +153,20 @@ private:
   vector<greedy_block> blocking;
   vector<greedy_vertex> vertices;
 
+  inline double get_distance(const int i, const int j, const int dimensions, const double* const data_matrix) {
+    double out = 0;
+    for (int d = 0; d < dimensions; ++d) {
+      out += std::pow(data_matrix[i * dimensions + d] - data_matrix[j * dimensions + d], 2);
+    }
+    return std::sqrt(out);
+  }
+
 public:
   greedy_blocking(const int init_k,
                   const int n_vertices,
                   const int* const init_blocking,
-                  const double* const dist_mat) : k(init_k), blocking(), vertices(n_vertices) {
+                  const int dimensions,
+                  const double* const data_matrix) : k(init_k), blocking(), vertices(n_vertices) {
 
     blocking.reserve(1 + n_vertices / k);
 
@@ -174,8 +184,9 @@ public:
              i_it != block_vertices.end(); ++i_it) {
           for (vector<int>::const_iterator j_it = i_it + 1;
                j_it != block_vertices.end(); ++j_it) {
-            vertices[*i_it].add_edge(*j_it, dist_mat[*i_it * n_vertices + *j_it]);
-            vertices[*j_it].add_edge(*i_it, dist_mat[*i_it * n_vertices + *j_it]);
+            double dist = get_distance(*i_it, *j_it, dimensions, data_matrix);
+            vertices[*i_it].add_edge(*j_it, dist);
+            vertices[*j_it].add_edge(*i_it, dist);
           }
           vertices[*i_it].sort();
         }
@@ -208,20 +219,22 @@ public:
 
 extern "C" {
 
-  SEXP cpp_get_greedy_blocking(const SEXP k_R, const SEXP prev_blocking_R, const SEXP dist_mat_R) {
+  SEXP cpp_get_greedy_blocking(const SEXP k_R,
+                               const SEXP prev_blocking_R,
+                               const SEXP data_matrix_R) {
 
     const int k = asInteger(k_R);
     const int n_vertices = length(prev_blocking_R);
+    const int dimensions = INTEGER(getAttrib(data_matrix_R, R_DimSymbol))[0];
 
-    if (INTEGER(getAttrib(dist_mat_R, R_DimSymbol))[0] != n_vertices ||
-          INTEGER(getAttrib(dist_mat_R, R_DimSymbol))[1] != n_vertices) {
-      error("Invalid distance matrix.");
+    if (INTEGER(getAttrib(data_matrix_R, R_DimSymbol))[1] != n_vertices) {
+      error("Invalid data matrix.");
     }
 
     const int* const prev_blocking = INTEGER(prev_blocking_R);
-    const double* const dist_mat = REAL(dist_mat_R);
+    const double* const data_matrix = REAL(data_matrix_R);
 
-    greedy_blocking greedy_obj(k, n_vertices, prev_blocking, dist_mat);
+    greedy_blocking greedy_obj(k, n_vertices, prev_blocking, dimensions, data_matrix);
 
     greedy_obj.construct_blocking();
 
