@@ -5,7 +5,7 @@ Rrep_get_greedy_blocking <- function(data,
 
   if (is.data.frame(data)) data <- as.matrix(data)
   block_size <- as.integer(block_size)[1]
-  if (is.null(prev_blocking)) prev_blocking <- rep(1, nrow(data))
+  if (is.null(prev_blocking)) prev_blocking <- rep(1L, nrow(data))
 
   stopifnot(is.matrix(data),
             is.numeric(data),
