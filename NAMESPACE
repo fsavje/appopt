@@ -2,11 +2,13 @@
 
 export(get_block_stats)
 export(get_blocking)
+export(get_estimate)
 export(get_greedy_blocking)
 export(get_randomize)
 export(normalize_cov)
 useDynLib(appopt,cpp_ann_init)
 useDynLib(appopt,cpp_ann_query)
+useDynLib(appopt,cpp_estimate)
 useDynLib(appopt,cpp_get_block_stats)
 useDynLib(appopt,cpp_get_blocking)
 useDynLib(appopt,cpp_get_greedy_blocking)
