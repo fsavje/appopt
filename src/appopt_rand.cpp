@@ -16,9 +16,14 @@ inline double gen_unif() {
 }
 
 template<class T>
+inline T get_rand_int(const T max) {
+  return static_cast<T>(gen_unif() * static_cast<double>(max));
+}
+
+template<class T>
 void sample(std::vector<T>& x, const typename std::vector<T>::size_type to_draw) {
   for (typename std::vector<T>::size_type i = 0; i < to_draw; ++i) {
-    std::swap(x[i], x[i + static_cast<typename std::vector<T>::size_type>(gen_unif() * static_cast<double>(x.size() - i))]);
+    std::swap(x[i], x[i + get_rand_int(x.size() - i)]);
   }
   x.resize(to_draw);
 }
@@ -26,7 +31,7 @@ void sample(std::vector<T>& x, const typename std::vector<T>::size_type to_draw)
 template<class T>
 void shuffle(std::vector<T>& x) {
   for (typename std::vector<T>::size_type i = 0; i < x.size(); ++i) {
-    std::swap(x[i], x[i + static_cast<typename std::vector<T>::size_type>(gen_unif() * static_cast<double>(x.size() - i))]);
+    std::swap(x[i], x[i + get_rand_int(x.size() - i)]);
   }
 }
 
