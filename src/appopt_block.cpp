@@ -168,24 +168,49 @@ int get_blocking_internal(const int n_vertices,
     }
   }
 
+
   if (unassinged_method == ADJACENT_S) {
     // Assign unassigned to the block that contains
-    // any of its nearest neighbors. When ties pick
-    // first adjacent lexicographically by index.
-    // Write negative block label as temp.
-    for (int i = 0; i < n_vertices; ++i) {
-      if (blocks[i] == 0) {
-        --n_unassigned;
-        int lowest_adjacent = n_vertices;
-        const int* const a_stop = NNE_i + NNE_p[i + 1];
-        for (const int* a = NNE_i + NNE_p[i]; a != a_stop; ++a) {
-          if (*a < lowest_adjacent && blocks[*a] > 0) {
-            blocks[i] = -blocks[*a];
-            lowest_adjacent = *a;
+    // a neighbor in the NNE. Set to negative first as
+    // unassigned cannot be match to another unassigned
+    // that just been assigned.
+
+    // If NNE is directed, it is ordered by closeness.
+    // I.e. the unassigned will be assigned to the blocks
+    // that contain their closest neighbor.
+    // When NNE is undirected, the matrix multiplication
+    // has scrambled the ordering. Then the unassigned are
+    // assigned to neighbors lexically.
+    if (directed) {
+      for (int i = 0; i < n_vertices; ++i) {
+        if (blocks[i] == 0) {
+          --n_unassigned;
+          const int* const a_stop = NNE_i + NNE_p[i + 1];
+          for (const int* a = NNE_i + NNE_p[i]; a != a_stop; ++a) {
+            if (blocks[*a] > 0) {
+              blocks[i] = -blocks[*a];
+              break;
+            }
+          }
+        }
+      }
+
+    } else {
+      for (int i = 0; i < n_vertices; ++i) {
+        if (blocks[i] == 0) {
+          --n_unassigned;
+          int lowest_adjacent = n_vertices;
+          const int* const a_stop = NNE_i + NNE_p[i + 1];
+          for (const int* a = NNE_i + NNE_p[i]; a != a_stop; ++a) {
+            if (*a < lowest_adjacent && blocks[*a] > 0) {
+              blocks[i] = -blocks[*a];
+              lowest_adjacent = *a;
+            }
           }
         }
       }
     }
+
     for (int i = 0; i < n_vertices; ++i) {
       if (blocks[i] < 0) {
         blocks[i] = -blocks[i];

@@ -37,6 +37,8 @@ for (test in tests) {
 
     if (!identical(blocking, Rrep_blocking)) {
       print(all.equal(blocking, Rrep_blocking))
+      print(test)
+      print(cbind(blocking, Rrep_blocking$blocks))
       stop("Not identical, breaking.")
     }
   }

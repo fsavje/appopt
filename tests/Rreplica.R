@@ -82,7 +82,15 @@ Rrep_get_blocking <- function(data,
   unassigned_R <- which(blocks == 0)
 
   if (length(unassigned_R) > 0) {
-    if (unassinged_method == "adjacent_search") {
+    if (directed && unassinged_method == "adjacent_search") {
+      assigned_R <- which(blocks != 0)
+      blocks[unassigned_R] <- blocks[as.vector(Rrep_nn_query(data,
+                                                             assigned_R - 1L,
+                                                             unassigned_R - 1L,
+                                                             1L,
+                                                             FALSE,
+                                                             FALSE)$nn_indices) + 1L]
+    } else if (!directed && unassinged_method == "adjacent_search") {
       is_assigned <- (blocks != 0)
       for (ua in unassigned_R) {
         # NNG[, ua] & is_assigned = assigned neighbors
