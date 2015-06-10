@@ -1,0 +1,40 @@
+aoD2AG-10M-5 	OK
+aoD2AG-10M-10 	OK
+aoD2AG-100M-5 	OK
+aoD2AG-100M-10 	TIME
+
+aoD2SG-10M-5 	OK
+aoD2SG-10M-10 	OK
+aoD2SG-100M-5 	OK
+aoD2SG-100M-10 	TIME
+
+aoDLAV-10M-5 	OK
+aoDLAV-10M-10 	OK
+aoDLAV-100M-5 	OK
+aoDLAV-100M-10 	TIME
+
+aoULAV-10M-5 	OK
+aoULAV-10M-10 	OK
+aoULAV-100M-5 	OK
+aoULAV-100M-10 	TIME
+
+greedy-50k-2 	MEM
+greedy-50k-5 	MEM
+greedy-50k-10 	MEM
+greedy-100k-2 	MEM
+greedy-100k-5 	MEM
+greedy-100k-10 	MEM
+
+moore-50k-2 	MEM
+moore-50k-5 	MEM
+moore-50k-10 	MEM
+moore-100k-2 	MEM
+moore-100k-5 	MEM
+moore-100k-10 	MEM
+
+nbpm-50k-2 		MEM
+nbpm-50k-5 		MEM
+nbpm-50k-10 	MEM
+nbpm-100k-2 	MEM
+nbpm-100k-5 	MEM
+nbpm-100k-10 	MEM

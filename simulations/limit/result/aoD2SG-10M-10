@@ -1,0 +1,24 @@
+aoD2SG 10M 10 1 - 	Command being timed: "Rscript algorithms/aoD2SG.R /global/scratch/fsavje/testlimit/td-10M-10.RData"
+	User time (seconds): 7076.97
+	System time (seconds): 4.97
+	Percent of CPU this job got: 95%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:03:32
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4421900
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 29717
+	Minor (reclaiming a frame) page faults: 749260
+	Voluntary context switches: 32653
+	Involuntary context switches: 729609
+	Swaps: 0
+	File system inputs: 1257728
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+all well

@@ -1,0 +1,30 @@
+Error in nonbimatch(distancematrix(gendistance(raw_data, idcol = "id")),  : 
+  error in evaluating the argument 'mdm' in selecting a method for function 'nonbimatch': Error in distancematrix(gendistance(raw_data, idcol = "id")) : 
+  error in evaluating the argument 'x' in selecting a method for function 'distancematrix': Error in rowSums(y %*% Sinv * y) : 
+  'Calloc' could not allocate memory (100000 of 16 bytes)
+Calls: gendistance -> gendistance -> sapply -> lapply -> FUN -> rowSums
+Execution halted
+Command exited with non-zero status 1
+	Command being timed: "Rscript algorithms/nbpm.R /global/scratch/fsavje/testlimit/td-100k-10.RData"
+	User time (seconds): 2306.09
+	System time (seconds): 88.35
+	Percent of CPU this job got: 83%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 47:41.13
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 50215196
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1130
+	Minor (reclaiming a frame) page faults: 5692970
+	Voluntary context switches: 4645
+	Involuntary context switches: 245446
+	Swaps: 0
+	File system inputs: 83056
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

@@ -1,0 +1,30 @@
+Error in nonbimatch(distancematrix(gendistance(raw_data, idcol = "id")),  : 
+  error in evaluating the argument 'mdm' in selecting a method for function 'nonbimatch': Error in distancematrix(gendistance(raw_data, idcol = "id")) : 
+  error in evaluating the argument 'x' in selecting a method for function 'distancematrix': Error: cannot allocate vector of size 18.6 Gb
+Execution halted
+Warning message:
+system call failed: Cannot allocate memory 
+Command exited with non-zero status 1
+	Command being timed: "Rscript algorithms/nbpm.R /global/scratch/fsavje/testlimit/td-50k-5.RData"
+	User time (seconds): 483.15
+	System time (seconds): 177.67
+	Percent of CPU this job got: 57%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 19:14.85
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 46944304
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1231
+	Minor (reclaiming a frame) page faults: 7941998
+	Voluntary context switches: 7423
+	Involuntary context switches: 65658
+	Swaps: 0
+	File system inputs: 98520
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1
