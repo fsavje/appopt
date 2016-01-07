@@ -1,6 +1,6 @@
+#include <ANN/ANN.h>
 #include <R.h>
 #include <Rinternals.h>
-#include <ANN/ANN.h>
 
 #define ANN_BRUTE  1
 #define ANN_KDTREE 2
