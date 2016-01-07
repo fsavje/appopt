@@ -16,7 +16,7 @@ $(LIBOUT): $(OBJECTS)
 	$(AR) -rucs $(LIBOUT) $(OBJECTS)
 
 $(BUILDDIR)/%.o: source/%.cpp
-	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c -Wno-unused-const-variable $< -o $@
 
 $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
