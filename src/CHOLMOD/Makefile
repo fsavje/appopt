@@ -6,7 +6,7 @@ TOBUILD = cholmod_aat.o cholmod_add.o cholmod_band.o cholmod_change_factor.o \
             cholmod_error.o cholmod_factor.o cholmod_memory.o cholmod_sparse.o \
             cholmod_transpose.o cholmod_triplet.o cholmod_version.o SuiteSparse_config.o
 
-EXTRA_CFLAGS = -Wno-unused-variable -Wno-unused-but-set-variable
+EXTRA_CFLAGS = -Wno-unused-variable
 
 OBJECTS = $(addprefix $(BUILDDIR)/,$(TOBUILD))
 
